@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4 md:p-8">
+    <div id="videoGrid" class="grid grid-cols-1 gap-2 md:gap-4 max-w-7xl mx-auto px-4 md:px-0">
+        <!-- Videos will be loaded here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadVideos() {
+        try {
+            const response = await fetch('/api/videos');
+            const data = await response.json();
+            const grid = document.getElementById('videoGrid');
+            
+            grid.innerHTML = '';
+            
+            if (data.videos.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-gray-600 text-center">No videos found.</p>';
+                return;
+            }
+            
+            data.videos.forEach(video => {
+                const videoDiv = document.createElement('div');
+                videoDiv.className = 'video-item cursor-pointer';
+                videoDiv.style.width = '100%';
+                videoDiv.style.overflow = 'hidden';
+                videoDiv.style.position = 'relative';
+                
+                const img = document.createElement('img');
+                img.src = video.cover;
+                img.className = 'w-full h-auto object-contain';
+                img.loading = 'lazy';
+                
+                // Fallback to lower quality if primary fails
+                img.onerror = function() {
+                    if (video.cover_fallback && this.src !== video.cover_fallback) {
+                        this.src = video.cover_fallback;
+                    }
+                };
+                
+                // Fade in when image loads
+                img.onload = function() {
+                    this.classList.add('loaded');
+                };
+                if (img.complete) {
+                    img.classList.add('loaded');
+                }
+                
+                videoDiv.onclick = () => {
+                    if (video.youtube_url) {
+                        window.open(video.youtube_url, '_blank');
+                    }
+                };
+                
+                videoDiv.appendChild(img);
+                grid.appendChild(videoDiv);
+            });
+        } catch (error) {
+            console.error('Error loading videos:', error);
+        }
+    }
+    
+    loadVideos();
+</script>
+{% endblock %}
+

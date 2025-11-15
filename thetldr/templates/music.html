@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4 md:p-8">
+    <div id="musicGrid" class="grid grid-cols-1 gap-2 md:gap-4 max-w-7xl mx-auto px-4 md:px-0">
+        <!-- Music tracks will be loaded here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadMusic() {
+        try {
+            const response = await fetch('/api/music');
+            const data = await response.json();
+            const grid = document.getElementById('musicGrid');
+            
+            grid.innerHTML = '';
+            
+            if (data.tracks.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-gray-600 text-center">No music tracks found.</p>';
+                return;
+            }
+            
+            data.tracks.forEach(track => {
+                const trackDiv = document.createElement('div');
+                trackDiv.className = 'music-item cursor-pointer';
+                trackDiv.style.width = '100%';
+                trackDiv.style.overflow = 'hidden';
+                trackDiv.style.position = 'relative';
+                
+                const img = document.createElement('img');
+                img.src = track.cover;
+                img.className = 'w-full h-auto object-contain';
+                img.loading = 'lazy';
+                
+                // Fallback to lower quality if primary fails
+                img.onerror = function() {
+                    if (track.cover_fallback && this.src !== track.cover_fallback) {
+                        this.src = track.cover_fallback;
+                    }
+                };
+                
+                // Fade in when image loads
+                img.onload = function() {
+                    this.classList.add('loaded');
+                };
+                if (img.complete) {
+                    img.classList.add('loaded');
+                }
+                
+                trackDiv.onclick = () => {
+                    if (track.youtube_url) {
+                        window.open(track.youtube_url, '_blank');
+                    }
+                };
+                
+                trackDiv.appendChild(img);
+                grid.appendChild(trackDiv);
+            });
+        } catch (error) {
+            console.error('Error loading music:', error);
+        }
+    }
+    
+    loadMusic();
+</script>
+{% endblock %}
+

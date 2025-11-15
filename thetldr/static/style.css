@@ -1,0 +1,268 @@
+/* Hide scrollbar for all browsers */
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Apply Inter font to entire site */
+html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.nav-link {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-size: 1.1rem;
+}
+
+.nav-link:hover {
+    color: #000000;
+}
+
+.nav-link.active {
+    color: #000000;
+    font-weight: bold;
+}
+
+.photo-item {
+    transition: transform 0.3s;
+    /* Aspect ratio will be set dynamically based on image */
+}
+
+.photo-item:hover {
+    transform: scale(1.02);
+}
+
+.video-item,
+.music-item {
+    transition: transform 0.3s;
+    /* Aspect ratio will be based on image natural dimensions */
+}
+
+.video-item:hover,
+.music-item:hover {
+    transform: scale(1.02);
+}
+
+/* Smooth transitions and disable text selection everywhere */
+* {
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Allow text selection for links (to copy URLs) */
+a {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+
+/* Ensure images maintain aspect ratio */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    object-fit: contain;
+    image-rendering: auto;
+    -webkit-image-rendering: auto;
+    outline: none;
+    border: none;
+}
+
+img:focus,
+img:hover {
+    outline: none;
+    border: none;
+}
+
+img.loaded {
+    opacity: 1;
+}
+
+/* Fade-in animation for images */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+/* Photo detail page styles - TikTok style scrolling */
+.photo-scroll-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1;
+    overscroll-behavior: contain;
+    background: white;
+    outline: none;
+}
+
+.photo-scroll-container:focus {
+    outline: none;
+}
+
+@media (max-width: 767px) {
+    .photo-scroll-container {
+        bottom: 64px; /* Space for mobile bottom navigation */
+        height: calc(100vh - 64px);
+        height: calc(100dvh - 64px); /* Dynamic viewport height for mobile */
+    }
+}
+
+.photo-scroll-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.photo-detail-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    padding: 0;
+    flex-shrink: 0;
+    background: white;
+    outline: none;
+}
+
+.photo-detail-item:focus {
+    outline: none;
+}
+
+@media (max-width: 767px) {
+    .photo-detail-item {
+        min-height: calc(100vh - 64px);
+        min-height: calc(100dvh - 64px); /* Dynamic viewport height for mobile */
+        height: calc(100vh - 64px);
+        height: calc(100dvh - 64px);
+    }
+}
+
+.photo-detail-image {
+    max-width: 100%;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0;
+}
+
+@media (max-width: 767px) {
+    .photo-detail-image {
+        max-height: calc(100vh - 64px);
+        max-height: calc(100dvh - 64px); /* Dynamic viewport height for mobile */
+    }
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 9999;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s;
+    flex: 1;
+    min-width: 0;
+}
+
+.mobile-nav-item svg {
+    margin: 0;
+}
+
+.mobile-nav-item.active {
+    color: #000000;
+}
+
+.mobile-nav-item:active {
+    color: #000000;
+}
+
+.mobile-nav-item span {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+}
+
+/* Bio content styles */
+.bio-content {
+    line-height: 1.8;
+    font-size: 1rem;
+    color: #000000;
+}
+
+.bio-content a {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.bio-content a:hover {
+    color: #000000;
+}
+
+

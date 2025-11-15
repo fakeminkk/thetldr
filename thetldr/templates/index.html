@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-4 md:p-8">
+    <div id="photoGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 max-w-[1136px] mx-auto px-4 md:px-0">
+        <!-- Photos will be loaded here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const folderPath = 'fav_photo';
+    
+    async function loadPhotos() {
+        try {
+            const response = await fetch(`/api/photos/${folderPath}`);
+            const data = await response.json();
+            const grid = document.getElementById('photoGrid');
+            
+            // Get photo links mapping
+            const linksResponse = await fetch('/api/fav-photo-links');
+            const linksData = await linksResponse.json();
+            const photoLinks = linksData.links || {};
+            
+            grid.innerHTML = '';
+            
+            // Shuffle photos array for random order on each page load
+            const shuffledPhotos = [...data.photos];
+            for (let i = shuffledPhotos.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledPhotos[i], shuffledPhotos[j]] = [shuffledPhotos[j], shuffledPhotos[i]];
+            }
+            
+            shuffledPhotos.forEach(photo => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-item cursor-pointer';
+                photoDiv.style.width = '100%';
+                photoDiv.style.overflow = 'hidden';
+                photoDiv.style.position = 'relative';
+                
+                const img = document.createElement('img');
+                img.src = photo.path;
+                img.className = 'w-full h-auto';
+                img.style.objectFit = 'contain';
+                img.style.display = 'block';
+                img.loading = 'lazy';
+                
+                // Fade in when image loads
+                img.onload = function() {
+                    this.classList.add('loaded');
+                };
+                
+                // If image is already cached, trigger load
+                if (img.complete) {
+                    img.classList.add('loaded');
+                }
+                
+                // Image will maintain its natural aspect ratio automatically
+                // with w-full h-auto classes
+                
+                // Determine destination folder
+                const destFolder = photoLinks[photo.filename];
+                photoDiv.onclick = () => {
+                    if (destFolder && destFolder.trim() !== '') {
+                        window.location.href = `/photos/${destFolder}?source=${encodeURIComponent(photo.filename)}`;
+                    } else {
+                        window.location.href = `/photos?source=${encodeURIComponent(photo.filename)}`;
+                    }
+                };
+                
+                photoDiv.appendChild(img);
+                grid.appendChild(photoDiv);
+            });
+        } catch (error) {
+            console.error('Error loading photos:', error);
+        }
+    }
+    
+    loadPhotos();
+</script>
+{% endblock %}
+
